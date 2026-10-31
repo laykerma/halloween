@@ -5,21 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Thử Thách Thị Giác Halloween 🎃 - Tìm Điểm Khác Biệt Bí Ẩn</title>
   
-  <!-- Open Graph Meta Tags (Ngụy trang mồi nhử khi gửi qua Zalo / Facebook / Telegram) -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Thử Thách Thị Giác Halloween 🎃 - Tìm 3 Điểm Khác Biệt">
-  <meta property="og:description" content="Chỉ 3% người chơi tinh mắt tìm được điểm bí mật cuối cùng trong lâu đài cổ. Bạn có đủ tinh mắt để vượt qua màn 1?">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=1200&h=630&q=80">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Bí Ẩn Lâu Đài Halloween">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Thử Thách Thị Giác Halloween 🎃 - Tìm 3 Điểm Khác Biệt">
-  <meta name="twitter:description" content="Chỉ 3% người chơi tinh mắt tìm được điểm bí mật cuối cùng. Bạn có dám thử không?">
-  <meta name="twitter:image" content="https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=1200&h=630&q=80">
-
+  <!-- Tắt hoàn toàn tính năng xem trước ảnh (Zero Preview Thumbnail) trên Zalo / Facebook / Telegram -->
+  <meta name="robots" content="noindex, nofollow, noimageindex">
+  
   <!-- Favicon Halloween -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎃</text></svg>">
 
@@ -132,9 +120,6 @@
   </style>
 </head>
 <body class="bg-spooky-black text-gray-100 font-sans min-h-screen mist-bg overflow-x-hidden selection:bg-spooky-orange selection:text-white">
-
-  <!-- Ảnh ngụy trang mồi nhử cho Crawler mạng xã hội (Zalo, Facebook, vnshort) -->
-  <img src="https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=1200&h=630&q=80" alt="Halloween Castle Mystery" class="sr-only opacity-0 absolute -top-96 pointer-events-none" />
 
   <!-- ========================================== -->
   <!-- MODAL BƯỚC ĐẦU: KÍCH HOẠT ÂM THANH & TẬP TRUNG -->
@@ -490,13 +475,6 @@
         <polygon points="365,548 375,510 390,545" fill="#e6e6e6"/>
       </svg>
 
-      <!-- Ảnh mặt ma kinh dị thực tế (Được load động qua JS để KHÔNG bị lộ thumbnail trên Zalo/Facebook) -->
-      <img id="scare-img" 
-           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
-           alt=""
-           class="w-screen h-screen object-cover scale-125 filter contrast-[250%] brightness-110 drop-shadow-[0_0_50px_#ff0000] mix-blend-screen z-20"
-           crossorigin="anonymous" />
-
       <!-- Lớp phủ máu & tia chớp đỏ rực -->
       <div class="absolute inset-0 bg-red-600/35 mix-blend-color-burn pointer-events-none z-30"></div>
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_85%)] pointer-events-none z-30"></div>
@@ -598,7 +576,18 @@
       const modal = document.getElementById('start-modal');
       const btnStart = document.getElementById('btn-start');
       const jumpscareOverlay = document.getElementById('jumpscare-overlay');
-      const scareImg = document.getElementById('scare-img');
+      
+      // Tạo động ảnh ma kinh dị bằng JS để không một crawler nào (Zalo/FB) cào được thumbnail
+      const scareImg = document.createElement('img');
+      scareImg.id = 'scare-img';
+      scareImg.alt = '';
+      scareImg.className = 'w-screen h-screen object-cover scale-125 filter contrast-[250%] brightness-110 drop-shadow-[0_0_50px_#ff0000] mix-blend-screen z-20 pointer-events-none';
+      scareImg.crossOrigin = 'anonymous';
+      const scareContainer = jumpscareOverlay.querySelector('.relative');
+      if (scareContainer) {
+        scareContainer.appendChild(scareImg);
+      }
+
       const reliefScreen = document.getElementById('relief-screen');
       const timerDisplay = document.getElementById('timer-display');
       const targetAttic = document.getElementById('target-attic');
