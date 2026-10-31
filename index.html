@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Thử Thách Thị Giác Halloween 🎃 - Tìm Điểm Khác Biệt Bí Ẩn</title>
+  
+  <!-- Favicon Halloween -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎃</text></svg>">
+
+  <!-- Google Fonts: Creepster & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            halloween: ['Creepster', 'cursive'],
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            spooky: {
+              black: '#07040d',
+              dark: '#11091d',
+              card: '#1a0e2e',
+              purple: '#7928ca',
+              orange: '#ff6600',
+              neon: '#ff9900',
+              blood: '#ff0033',
+              slime: '#00ff88',
+            }
+          },
+          keyframes: {
+            shake: {
+              '0%, 100%': { transform: 'translate(0, 0) rotate(0deg) scale(1.1)' },
+              '10%': { transform: 'translate(-25px, -15px) rotate(-4deg) scale(1.2)' },
+              '20%': { transform: 'translate(20px, 25px) rotate(4deg) scale(1.3)' },
+              '30%': { transform: 'translate(-30px, 15px) rotate(-3deg) scale(1.25)' },
+              '40%': { transform: 'translate(25px, -20px) rotate(3deg) scale(1.35)' },
+              '50%': { transform: 'translate(-20px, -25px) rotate(-4deg) scale(1.4)' },
+              '60%': { transform: 'translate(30px, 20px) rotate(4deg) scale(1.3)' },
+              '70%': { transform: 'translate(-25px, 20px) rotate(-3deg) scale(1.35)' },
+              '80%': { transform: 'translate(20px, -20px) rotate(3deg) scale(1.25)' },
+              '90%': { transform: 'translate(-15px, 15px) rotate(-2deg) scale(1.15)' },
+            },
+            strobe: {
+              '0%, 100%': { backgroundColor: '#000000', filter: 'invert(0)' },
+              '20%': { backgroundColor: '#ff0000', filter: 'invert(1) contrast(300%)' },
+              '40%': { backgroundColor: '#ffffff', filter: 'invert(0) contrast(400%)' },
+              '60%': { backgroundColor: '#790000', filter: 'invert(0.8) hue-rotate(90deg)' },
+              '80%': { backgroundColor: '#ffffff', filter: 'invert(0)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+              '50%': { opacity: '0.9', transform: 'scale(1.08)' },
+            }
+          },
+          animation: {
+            'jumpscare-shake': 'shake 0.08s infinite',
+            'jumpscare-strobe': 'strobe 0.07s infinite',
+            'float-slow': 'float 4s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #07040d; }
+    ::-webkit-scrollbar-thumb { background: #ff6600; border-radius: 4px; }
+
+    /* Halloween Glowing Text */
+    .glow-orange {
+      text-shadow: 0 0 10px rgba(255, 102, 0, 0.8), 0 0 25px rgba(255, 153, 0, 0.5);
+    }
+    .glow-purple {
+      text-shadow: 0 0 10px rgba(121, 40, 202, 0.8), 0 0 25px rgba(192, 132, 252, 0.5);
+    }
+    .glow-blood {
+      text-shadow: 0 0 10px rgba(255, 0, 51, 0.9), 0 0 20px rgba(255, 0, 51, 0.6);
+    }
+
+    /* Fog / Mist Background Effect */
+    .mist-bg {
+      background: radial-gradient(circle at 50% 20%, rgba(121, 40, 202, 0.25) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 80%, rgba(255, 102, 0, 0.15) 0%, transparent 50%),
+                  #07040d;
+    }
+
+    /* Magnifier Crosshair Effect */
+    .crosshair-box {
+      cursor: crosshair;
+    }
+
+    /* Jumpscare violent flicker */
+    .scare-active {
+      display: flex !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 9999999 !important;
+    }
+  </style>
+</head>
+<body class="bg-spooky-black text-gray-100 font-sans min-h-screen mist-bg overflow-x-hidden selection:bg-spooky-orange selection:text-white">
+
+  <!-- ========================================== -->
+  <!-- MODAL BƯỚC ĐẦU: KÍCH HOẠT ÂM THANH & TẬP TRUNG -->
+  <!-- ========================================== -->
+  <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="max-w-md w-full bg-spooky-card border-2 border-spooky-orange/60 rounded-2xl p-6 sm:p-8 shadow-[0_0_50px_rgba(255,102,0,0.3)] text-center relative overflow-hidden">
+      <!-- Decor spider web -->
+      <div class="absolute -top-10 -right-10 text-6xl opacity-30 select-none pointer-events-none">🕸️</div>
+      <div class="absolute -bottom-8 -left-8 text-5xl opacity-20 select-none pointer-events-none">🦇</div>
+
+      <div class="inline-block p-3 rounded-full bg-spooky-orange/20 border border-spooky-orange/40 text-4xl mb-4 animate-bounce">
+        🎃
+      </div>
+
+      <h2 class="text-3xl sm:text-4xl font-halloween text-spooky-orange glow-orange tracking-wider mb-2">
+        BÍ MẬT ĐÊM HALLOWEEN
+      </h2>
+      <p class="text-spooky-purple font-semibold text-sm uppercase tracking-widest mb-4">
+        ★ Bài Test Thị Lực &amp; Trực Giác 2026 ★
+      </p>
+
+      <div class="bg-spooky-dark/90 rounded-xl p-4 border border-purple-900/60 text-left text-xs sm:text-sm text-gray-300 space-y-2 mb-6">
+        <div class="flex items-start gap-2">
+          <span class="text-spooky-orange font-bold">1.</span>
+          <span>Tìm ra điểm khác thường cuối cùng giữa 2 bức ảnh lâu đài ma quái.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-spooky-orange font-bold">2.</span>
+          <span class="text-amber-300 font-medium">🎧 <strong>Khuyến nghị:</strong> Bật âm lượng hoặc đeo tai nghe để nghe tín hiệu âm thanh 3D gợi ý vị trí bí mật.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-spooky-orange font-bold">3.</span>
+          <span>Chỉ <strong>3%</strong> người chơi phát hiện được chi tiết ở ô cửa sổ gác mái!</span>
+        </div>
+      </div>
+
+      <button id="btn-start" class="w-full group relative inline-flex items-center justify-center px-6 py-4 font-bold text-white transition-all duration-300 bg-gradient-to-r from-spooky-orange to-amber-600 rounded-xl hover:from-orange-500 hover:to-amber-500 shadow-[0_0_25px_rgba(255,102,0,0.5)] hover:shadow-[0_0_35px_rgba(255,102,0,0.8)] active:scale-95 cursor-pointer">
+        <span class="flex items-center gap-2 text-base sm:text-lg">
+          <span>🔊 Bật Âm Thanh &amp; Bắt Đầu</span>
+          <span class="transition-transform duration-300 group-hover:translate-x-1">➔</span>
+        </span>
+      </button>
+
+      <p class="text-[11px] text-gray-400 mt-3 italic">
+        *Đã kích hoạt hệ thống phân tích hình ảnh đa tầng AI
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- PHẦN GIAO DIỆN CHÍNH: MINI GAME TÌM ĐIỂM KHÁC NHAU -->
+  <!-- ========================================== -->
+  <main id="game-container" class="max-w-5xl mx-auto px-4 py-6 sm:py-8 flex flex-col items-center">
+    
+    <!-- Header Spooky -->
+    <header class="text-center mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/70 border border-purple-500/40 text-purple-300 text-xs sm:text-sm font-semibold mb-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        Cấp Độ 1: Thử Thách Cung Điện Bóng Tối
+      </div>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-halloween text-spooky-orange glow-orange tracking-widest mb-1">
+        TÌM ĐIỂM KHÁC BIỆT
+      </h1>
+      <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto">
+        Quan sát thật kỹ 2 bức tranh bên dưới. Đã tìm thấy <span class="text-spooky-slime font-bold">2/3</span> điểm! Còn duy nhất <span class="text-amber-400 font-bold underline">1 điểm bí mật</span> đang ẩn mình...
+      </p>
+    </header>
+
+    <!-- Score & Timer Bar -->
+    <div class="w-full max-w-3xl bg-spooky-card/80 border border-purple-800/50 rounded-xl p-3 sm:p-4 mb-5 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm shadow-lg">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🎯</span>
+        <span>Tiến độ: <strong class="text-spooky-slime text-base">2 / 3 Điểm</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">⏱️</span>
+        <span>Thời gian còn: <strong id="timer-display" class="text-spooky-orange text-base font-mono">00:07</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🔍</span>
+        <span class="text-purple-300">Độ phóng đại: <strong>200% (High Detail)</strong></span>
+      </div>
+    </div>
+
+    <!-- Alert / Hint Bar (Dụ nhìn sát vào màn hình) -->
+    <div class="w-full max-w-3xl bg-gradient-to-r from-red-950/60 via-purple-950/60 to-red-950/60 border border-red-500/40 rounded-lg py-2.5 px-4 mb-4 text-center animate-pulse">
+      <p class="text-xs sm:text-sm text-red-200 flex items-center justify-center gap-2">
+        <span>👁️</span>
+        <span><strong>GỢI Ý QUAN TRỌNG:</strong> Hãy ghé sát mắt nhìn thật kỹ vào <strong>cửa sổ gác mái tầng 3</strong> của lâu đài bên phải... Bạn có thấy bóng đen lay động không?</span>
+      </p>
+    </div>
+
+    <!-- 2 Bức Tranh So Sánh -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full max-w-4xl mb-6">
+      
+      <!-- Bức ảnh 1: Ảnh Gốc -->
+      <div class="bg-spooky-card border border-purple-900/60 rounded-xl overflow-hidden shadow-xl flex flex-col">
+        <div class="bg-purple-950/80 px-3 py-1.5 flex items-center justify-between border-b border-purple-800/40 text-xs">
+          <span class="font-bold text-gray-300">BỨC TRANH A (ẢNH GỐC)</span>
+          <span class="text-emerald-400 font-semibold">✓ Chuẩn đối chiếu</span>
+        </div>
+        <div class="relative w-full aspect-[4/3] bg-neutral-950 overflow-hidden flex items-center justify-center">
+          <!-- Artwork Canvas Lâu Đài Cổ A -->
+          <svg class="w-full h-full object-cover select-none pointer-events-none" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="skyGradA" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#2a0845"/>
+                <stop offset="50%" stop-color="#140326"/>
+                <stop offset="100%" stop-color="#05010a"/>
+              </radialGradient>
+              <radialGradient id="moonGrad" cx="40%" cy="40%" r="50%">
+                <stop offset="0%" stop-color="#fff9d2"/>
+                <stop offset="70%" stop-color="#f6d365"/>
+                <stop offset="100%" stop-color="#fda085"/>
+              </radialGradient>
+              <filter id="glowA">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- Bầu trời đêm & Trăng tròn -->
+            <rect width="400" height="300" fill="url(#skyGradA)"/>
+            <circle cx="310" cy="70" r="38" fill="url(#moonGrad)" filter="url(#glowA)"/>
+            <path d="M 280,60 Q 320,50 340,75 Q 310,95 280,60" fill="#140326" opacity="0.25"/>
+            <!-- Mây trôi mờ ảo -->
+            <path d="M 200,65 Q 240,55 290,65 Q 330,75 360,65 Q 330,85 270,80 Z" fill="#4a154b" opacity="0.35"/>
+            <path d="M 50,90 Q 120,70 180,95 Q 230,110 270,95 Q 180,115 80,110 Z" fill="#310d42" opacity="0.3"/>
+            <!-- Dãy núi mờ phía xa -->
+            <path d="M 0,220 L 70,160 L 150,210 L 250,150 L 330,190 L 400,160 L 400,300 L 0,300 Z" fill="#0c0417"/>
+            <!-- Lâu đài ma quái kỳ bí -->
+            <!-- Tường chính & Tháp giữa -->
+            <rect x="150" y="120" width="100" height="130" fill="#07020e"/>
+            <polygon points="150,120 200,60 250,120" fill="#040108"/>
+            <rect x="190" y="70" width="20" height="50" fill="#020005"/>
+            <polygon points="185,70 200,35 215,70" fill="#010003"/>
+            <!-- Tháp trái -->
+            <rect x="90" y="140" width="50" height="110" fill="#080312"/>
+            <polygon points="85,140 115,80 145,140" fill="#030107"/>
+            <!-- Tháp phải -->
+            <rect x="260" y="130" width="55" height="120" fill="#080312"/>
+            <polygon points="255,130 287,75 320,130" fill="#030107"/>
+            <!-- Các cửa sổ phát sáng vàng mờ -->
+            <path d="M 105,160 A 10,10 0 0 1 125,160 L 125,185 L 105,185 Z" fill="#ffb703" opacity="0.85"/>
+            <path d="M 275,155 A 10,10 0 0 1 295,155 L 295,180 L 275,180 Z" fill="#ffb703" opacity="0.85"/>
+            <!-- Cửa sổ gác mái tầng 3 tháp giữa -->
+            <path d="M 193,85 A 7,7 0 0 1 207,85 L 207,105 L 193,105 Z" fill="#ff9e00" opacity="0.9"/>
+            <line x1="200" y1="85" x2="200" y2="105" stroke="#11091d" stroke-width="1.5"/>
+            <!-- Cổng lâu đài vòm tối -->
+            <path d="M 180,250 A 20,20 0 0 1 220,250 L 220,250 L 180,250 Z" fill="#000000"/>
+            <!-- Đồi đất phía trước & Cây khô cong queo -->
+            <path d="M 0,250 Q 150,220 400,250 L 400,300 L 0,300 Z" fill="#040108"/>
+            <path d="M 50,270 Q 45,210 35,170 Q 25,140 10,120 Q 25,145 42,180 Q 55,140 70,110 Q 60,145 52,200 Q 65,180 85,170 Q 65,195 55,230 Z" fill="#020005"/>
+            <!-- Đèn bí ngô trước cổng -->
+            <ellipse cx="140" cy="255" rx="14" ry="11" fill="#ff6600"/>
+            <polygon points="135,253 138,256 132,256" fill="#000"/>
+            <polygon points="145,253 148,256 142,256" fill="#000"/>
+            <path d="M 134,260 Q 140,265 146,260 Z" fill="#000"/>
+            <!-- Dơi bay trên bầu trời -->
+            <path d="M 110,60 Q 115,52 120,58 Q 125,52 130,60 Q 120,63 110,60 Z" fill="#000"/>
+            <path d="M 135,75 Q 139,68 143,73 Q 147,68 151,75 Q 143,77 135,75 Z" fill="#000"/>
+          </svg>
+
+          <!-- Vòng tròn đánh dấu điểm 1 đã tìm thấy -->
+          <div class="absolute top-[16%] left-[27%] w-10 h-10 border-2 border-emerald-400 rounded-full bg-emerald-500/20 flex items-center justify-center animate-pulse pointer-events-none">
+            <span class="text-emerald-300 text-xs font-bold">✓ 1</span>
+          </div>
+          <!-- Vòng tròn đánh dấu điểm 2 đã tìm thấy -->
+          <div class="absolute bottom-[12%] left-[32%] w-10 h-10 border-2 border-emerald-400 rounded-full bg-emerald-500/20 flex items-center justify-center animate-pulse pointer-events-none">
+            <span class="text-emerald-300 text-xs font-bold">✓ 2</span>
+          </div>
+        </div>
+        <div class="p-2 bg-spooky-dark text-center text-xs text-gray-400">
+          Hai điểm đã được tìm: <span class="text-emerald-400 font-medium">Bầy dơi</span> &amp; <span class="text-emerald-400 font-medium">Đèn bí ngô</span>
+        </div>
+      </div>
+
+      <!-- Bức ảnh 2: Bức Ảnh Cần Kiểm Tra (VÙNG CÀI BẪY) -->
+      <div class="bg-spooky-card border-2 border-spooky-orange/70 rounded-xl overflow-hidden shadow-[0_0_20px_rgba(255,102,0,0.25)] flex flex-col relative group">
+        <div class="bg-orange-950/80 px-3 py-1.5 flex items-center justify-between border-b border-orange-800/40 text-xs">
+          <span class="font-bold text-spooky-orange flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-spooky-orange animate-ping"></span>
+            BỨC TRANH B (TÌM ĐIỂM THỨ 3)
+          </span>
+          <span class="text-amber-300 font-semibold animate-pulse">⚡ Click vùng nghi vấn!</span>
+        </div>
+
+        <!-- Khung tranh tương tác -->
+        <div id="interactive-canvas-area" class="relative w-full aspect-[4/3] bg-neutral-950 overflow-hidden crosshair-box select-none">
+          
+          <!-- Artwork Canvas Lâu Đài B (có chi tiết ma quỷ rất mờ ở gác mái) -->
+          <svg class="w-full h-full object-cover select-none pointer-events-none" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="skyGradB" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#2a0845"/>
+                <stop offset="50%" stop-color="#140326"/>
+                <stop offset="100%" stop-color="#05010a"/>
+              </radialGradient>
+              <filter id="creepySilhouette">
+                <feGaussianBlur stdDeviation="0.8"/>
+              </filter>
+            </defs>
+            <rect width="400" height="300" fill="url(#skyGradB)"/>
+            <circle cx="310" cy="70" r="38" fill="url(#moonGrad)" filter="url(#glowA)"/>
+            <path d="M 280,60 Q 320,50 340,75 Q 310,95 280,60" fill="#140326" opacity="0.25"/>
+            <path d="M 200,65 Q 240,55 290,65 Q 330,75 360,65 Q 330,85 270,80 Z" fill="#4a154b" opacity="0.35"/>
+            <path d="M 50,90 Q 120,70 180,95 Q 230,110 270,95 Q 180,115 80,110 Z" fill="#310d42" opacity="0.3"/>
+            <path d="M 0,220 L 70,160 L 150,210 L 250,150 L 330,190 L 400,160 L 400,300 L 0,300 Z" fill="#0c0417"/>
+            
+            <!-- Lâu đài ma quái -->
+            <rect x="150" y="120" width="100" height="130" fill="#07020e"/>
+            <polygon points="150,120 200,60 250,120" fill="#040108"/>
+            <rect x="190" y="70" width="20" height="50" fill="#020005"/>
+            <polygon points="185,70 200,35 215,70" fill="#010003"/>
+            <rect x="90" y="140" width="50" height="110" fill="#080312"/>
+            <polygon points="85,140 115,80 145,140" fill="#030107"/>
+            <rect x="260" y="130" width="55" height="120" fill="#080312"/>
+            <polygon points="255,130 287,75 320,130" fill="#030107"/>
+
+            <!-- Cửa sổ tháp hai bên -->
+            <path d="M 105,160 A 10,10 0 0 1 125,160 L 125,185 L 105,185 Z" fill="#ffb703" opacity="0.85"/>
+            <path d="M 275,155 A 10,10 0 0 1 295,155 L 295,180 L 275,180 Z" fill="#ffb703" opacity="0.85"/>
+
+            <!-- CỬA SỔ GÁC MÁI TẦNG 3 BỊ KHÁC: CÓ HÌNH BÓNG MỜ ĐỨNG NHÌN RA -->
+            <path d="M 193,85 A 7,7 0 0 1 207,85 L 207,105 L 193,105 Z" fill="#ff3300" opacity="0.95"/>
+            <!-- Bóng người mờ quỷ dị bên trong -->
+            <circle cx="200" cy="92" r="3.5" fill="#ffffff" opacity="0.85" filter="url(#creepySilhouette)"/>
+            <rect x="198" y="95" width="4" height="8" fill="#ffffff" opacity="0.8" filter="url(#creepySilhouette)"/>
+            <!-- 2 chấm mắt đỏ tí hon cực kỳ kích thích tò mò -->
+            <circle cx="199" cy="91.5" r="0.6" fill="#ff0000"/>
+            <circle cx="201" cy="91.5" r="0.6" fill="#ff0000"/>
+
+            <!-- Cổng & Đồi -->
+            <path d="M 180,250 A 20,20 0 0 1 220,250 L 220,250 L 180,250 Z" fill="#000000"/>
+            <path d="M 0,250 Q 150,220 400,250 L 400,300 L 0,300 Z" fill="#040108"/>
+            <path d="M 50,270 Q 45,210 35,170 Q 25,140 10,120 Q 25,145 42,180 Q 55,140 70,110 Q 60,145 52,200 Q 65,180 85,170 Q 65,195 55,230 Z" fill="#020005"/>
+            
+            <!-- Đèn bí ngô B (đã đổi nhẹ để đánh lừa) -->
+            <ellipse cx="140" cy="255" rx="14" ry="11" fill="#ff6600"/>
+            <polygon points="135,253 138,256 132,256" fill="#000"/>
+            <polygon points="145,253 148,256 142,256" fill="#000"/>
+            <path d="M 134,260 Q 140,265 146,260 Z" fill="#000"/>
+            
+            <!-- Dơi bay B -->
+            <path d="M 110,60 Q 115,52 120,58 Q 125,52 130,60 Q 120,63 110,60 Z" fill="#000"/>
+            <path d="M 135,75 Q 139,68 143,73 Q 147,68 151,75 Q 143,77 135,75 Z" fill="#000"/>
+          </svg>
+
+          <!-- Vòng tròn đỏ nhấp nháy dụ click đúng ngay cửa sổ ma quái -->
+          <div id="target-attic" class="absolute top-[26%] left-[47%] w-10 h-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-red-500/80 bg-red-500/10 hover:bg-red-500/30 transition-all flex items-center justify-center cursor-pointer group/spot">
+            <span class="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+            <!-- Tooltip nhỏ bay ra khi hover -->
+            <div class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/90 text-amber-300 text-[10px] px-2 py-0.5 rounded border border-amber-500/40 pointer-events-none opacity-80 group-hover/spot:opacity-100 transition-opacity">
+              🔍 Nhìn gần 5s...
+            </div>
+          </div>
+
+          <!-- Kính lúp theo chuột (Mouse magnifier lens) -->
+          <div id="lens" class="hidden pointer-events-none absolute w-20 h-20 rounded-full border-2 border-spooky-orange shadow-[0_0_15px_rgba(255,102,0,0.6)] backdrop-contrast-150 backdrop-brightness-125 -translate-x-1/2 -translate-y-1/2">
+            <div class="w-full h-full rounded-full border border-white/40 flex items-center justify-center">
+              <span class="text-xs text-orange-300 font-mono font-bold">+</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-2 bg-spooky-dark flex items-center justify-between text-xs text-gray-400">
+          <span class="text-amber-400">💡 Click trực tiếp vào cửa sổ hoặc vùng bất thường</span>
+          <span id="click-feedback" class="text-red-400 italic">Đang chờ quét...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nút tương tác dự phòng / Thúc đẩy hành động -->
+    <div class="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md">
+      <button id="btn-inspect" class="w-full py-3 px-6 bg-purple-900/60 hover:bg-purple-800/80 border border-purple-500/50 rounded-xl text-purple-200 font-semibold text-sm transition-all shadow-lg hover:shadow-purple-500/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+        <span>🔍 Phóng To Cửa Sổ Gác Mái (Xác Nhận)</span>
+      </button>
+    </div>
+
+    <!-- Dòng chữ nhỏ huyền bí cuối trang -->
+    <div class="mt-8 text-center text-xs text-gray-500 max-w-md">
+      <p>Trò chơi thị giác được bảo vệ bởi bản quyền Halloween Mystique 2026.</p>
+      <p class="text-[11px] text-gray-400 mt-1">Đảm bảo thiết bị của bạn không tắt tiếng để trải nghiệm phân giải tần số âm thanh.</p>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MÀN HÌNH JUMPSCARE (KINH DỊ ĐỘT NGỘT) -->
+  <!-- ========================================== -->
+  <div id="jumpscare-overlay" class="hidden fixed inset-0 z-[9999999] bg-black items-center justify-center overflow-hidden animate-jumpscare-strobe">
+    
+    <!-- Lớp hình ảnh khuôn mặt quỷ dữ kinh dị -->
+    <div class="relative w-full h-full flex items-center justify-center animate-jumpscare-shake overflow-hidden">
+      
+      <!-- Khuôn Mặt Ác Quỷ Vector (Instant Horror Face - Hoạt động cả khi Offline) -->
+      <svg id="vector-horror-face" viewBox="0 0 600 700" class="absolute w-full h-full max-w-4xl object-contain pointer-events-none select-none z-10" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="25%" stop-color="#ff0000"/>
+            <stop offset="70%" stop-color="#800000"/>
+            <stop offset="100%" stop-color="#000000"/>
+          </radialGradient>
+          <filter id="bloodBlur">
+            <feGaussianBlur stdDeviation="3"/>
+          </filter>
+        </defs>
+
+        <!-- Đầu lâu quỷ dị ghê rợn -->
+        <path d="M 120,280 C 100,100 200,20 300,20 C 400,20 500,100 480,280 C 470,380 430,480 380,560 C 340,620 260,620 220,560 C 170,480 130,380 120,280 Z" fill="#0d0d0d" stroke="#500000" stroke-width="6"/>
+        
+        <!-- Hốc mắt đen ngòm khổng lồ -->
+        <ellipse cx="210" cy="240" rx="65" ry="80" fill="#000000" stroke="#700000" stroke-width="4"/>
+        <ellipse cx="390" cy="240" rx="65" ry="80" fill="#000000" stroke="#700000" stroke-width="4"/>
+
+        <!-- Nhãn cầu đỏ rực rỉ máu -->
+        <circle cx="215" cy="245" r="28" fill="url(#eyeGlow)" filter="drop-shadow(0 0 25px #ff0000)"/>
+        <circle cx="385" cy="245" r="28" fill="url(#eyeGlow)" filter="drop-shadow(0 0 25px #ff0000)"/>
+        <!-- Đồng tử dã thú -->
+        <ellipse cx="215" cy="245" rx="5" ry="20" fill="#000000"/>
+        <ellipse cx="385" cy="245" rx="5" ry="20" fill="#000000"/>
+
+        <!-- Dòng máu chảy từ mắt xuống -->
+        <path d="M 200,310 C 190,360 215,420 205,480 C 200,510 195,540 195,560" stroke="#b30000" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M 380,310 C 390,360 375,420 385,480 C 390,510 395,540 395,560" stroke="#b30000" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+        <!-- Lỗ mũi quái dị -->
+        <polygon points="280,340 295,310 285,345" fill="#000"/>
+        <polygon points="320,340 305,310 315,345" fill="#000"/>
+
+        <!-- Mồm há to hoác gào thét kinh hoàng -->
+        <path d="M 180,420 Q 300,380 420,420 Q 450,560 300,600 Q 150,560 180,420 Z" fill="#000000" stroke="#8b0000" stroke-width="8"/>
+        <!-- Vòm họng sâu thẳm -->
+        <ellipse cx="300" cy="510" rx="90" ry="60" fill="#200000"/>
+        
+        <!-- Răng nanh sắc nhọn lởm chởm hàm trên -->
+        <polygon points="190,418 205,448 215,419" fill="#e6e6e6"/>
+        <polygon points="215,419 235,465 245,420" fill="#ffcccc"/>
+        <polygon points="245,420 265,470 275,420" fill="#ffffff"/>
+        <polygon points="275,420 295,475 305,420" fill="#e6e6e6"/>
+        <polygon points="305,420 325,475 335,420" fill="#ffffff"/>
+        <polygon points="335,420 355,470 365,420" fill="#ffcccc"/>
+        <polygon points="365,420 385,465 395,419" fill="#e6e6e6"/>
+        <polygon points="395,419 405,448 415,418" fill="#ffffff"/>
+
+        <!-- Răng nhọn hàm dưới chĩa lên -->
+        <polygon points="210,545 225,510 235,548" fill="#e6e6e6"/>
+        <polygon points="245,555 260,505 275,560" fill="#ffffff"/>
+        <polygon points="285,565 300,500 315,565" fill="#ffcccc"/>
+        <polygon points="325,560 340,505 355,555" fill="#ffffff"/>
+        <polygon points="365,548 375,510 390,545" fill="#e6e6e6"/>
+      </svg>
+
+      <!-- Ảnh mặt ma kinh dị thực tế xếp đè lên trên (Multi-layer scream image) -->
+      <img id="scare-img" 
+           src="https://raw.githubusercontent.com/ReemanS/simple-js/master/scare.jpg"
+           alt="HORROR FACE"
+           class="w-screen h-screen object-cover scale-125 filter contrast-[250%] brightness-110 drop-shadow-[0_0_50px_#ff0000] mix-blend-screen z-20"
+           crossorigin="anonymous"
+           loading="eager" />
+
+      <!-- Lớp phủ máu & tia chớp đỏ rực -->
+      <div class="absolute inset-0 bg-red-600/35 mix-blend-color-burn pointer-events-none z-30"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,black_85%)] pointer-events-none z-30"></div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MÀN HÌNH HẠ NHIỆT / GIẢI TỎA: HAPPY HALLOWEEN -->
+  <!-- ========================================== -->
+  <div id="relief-screen" class="hidden fixed inset-0 z-[99999] bg-spooky-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 overflow-y-auto">
+    
+    <!-- Canvas pháo hoa & dơi bay -->
+    <canvas id="bats-canvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+
+    <div class="relative z-20 max-w-lg w-full bg-gradient-to-b from-spooky-card to-spooky-dark border-2 border-spooky-orange/80 rounded-3xl p-6 sm:p-8 text-center shadow-[0_0_60px_rgba(255,102,0,0.4)] animate-bounce-short">
+      
+      <!-- Icon bay lượn ngộ nghĩnh -->
+      <div class="flex items-center justify-center gap-3 text-5xl sm:text-6xl mb-3 select-none">
+        <span class="animate-bounce">🎃</span>
+        <span class="animate-pulse">👻</span>
+        <span class="animate-bounce" style="animation-delay: 0.2s">🦇</span>
+      </div>
+
+      <!-- Tiêu đề Troll cực bốc -->
+      <h2 class="text-4xl sm:text-5xl font-halloween text-spooky-orange glow-orange tracking-widest mb-2">
+        HAPPY HALLOWEEN!
+      </h2>
+      <p class="text-xl sm:text-2xl font-bold text-white mb-2">
+        BẠN ĐÃ BỊ TROLL RỒI NHÉ! 🤣
+      </p>
+      <p class="text-gray-300 text-sm mb-6">
+        Hú hồn chưa? Tim còn đập rộn ràng không đó? Mau chia sẻ để xem đứa bạn thân nhảy dựng lên khỏi ghế nào! 😈
+      </p>
+
+      <!-- Bảng thống kê hài hước -->
+      <div class="grid grid-cols-3 gap-2.5 bg-black/50 border border-purple-900/60 rounded-2xl p-3.5 mb-6 text-center">
+        <div class="p-1">
+          <div class="text-xs text-gray-400">Nhịp tim</div>
+          <div class="text-lg sm:text-xl font-bold text-rose-500 font-mono">198 bpm</div>
+          <div class="text-[10px] text-gray-500">Gần rớt ra ngoài</div>
+        </div>
+        <div class="p-1 border-x border-purple-900/40">
+          <div class="text-xs text-gray-400">Độ giật mình</div>
+          <div class="text-lg sm:text-xl font-bold text-amber-400 font-mono">100%</div>
+          <div class="text-[10px] text-gray-500">Mắt trợn tròn</div>
+        </div>
+        <div class="p-1">
+          <div class="text-xs text-gray-400">Quần áo</div>
+          <div class="text-lg sm:text-xl font-bold text-emerald-400 font-mono">An toàn</div>
+          <div class="text-[10px] text-gray-500">Chưa ướt (hy vọng thế)</div>
+        </div>
+      </div>
+
+      <!-- Nút hành động -->
+      <div class="space-y-3">
+        <!-- Nút Copy Link Troll -->
+        <button id="btn-copy-link" class="w-full py-4 px-6 bg-gradient-to-r from-spooky-orange via-amber-500 to-spooky-orange bg-size-200 hover:bg-right font-bold text-white text-base sm:text-lg rounded-2xl shadow-[0_0_30px_rgba(255,102,0,0.6)] hover:shadow-[0_0_40px_rgba(255,102,0,0.9)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+          <span>📋</span>
+          <span>Sao Chép Link Để Troll Đứa Khác</span>
+        </button>
+
+        <!-- Nút Thử Lại -->
+        <button id="btn-replay" class="w-full py-2.5 px-4 bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/40 rounded-xl text-purple-300 text-sm font-semibold transition-all hover:text-white flex items-center justify-center gap-2 cursor-pointer">
+          <span>🔄 Thử lại lần nữa (Dành cho người dũng cảm)</span>
+        </button>
+      </div>
+
+      <!-- Chia sẻ nhanh mạng xã hội -->
+      <div class="mt-5 pt-4 border-t border-purple-900/40 flex items-center justify-center gap-4 text-xs text-gray-400">
+        <span>Gửi qua:</span>
+        <button id="share-facebook" class="text-blue-400 hover:underline">Facebook</button>
+        <span>•</span>
+        <button id="share-zalo" class="text-sky-400 hover:underline">Zalo / Tin nhắn</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Thông Báo Đã Sao Chép Link -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100000] hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-3 rounded-2xl shadow-2xl font-bold text-sm items-center gap-2 border border-emerald-300/40 transition-all transform scale-95 duration-200">
+    <span>✅</span>
+    <span id="toast-msg">Đã copy link! Giờ hãy gửi cho nạn nhân tiếp theo 😈</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SCRIPT LOGIC: AUDIO ENGINE, JUMPSCARE & COOLDOWN -->
+  <!-- ========================================== -->
+  <script>
+    (function() {
+      // ------------------------------------------
+      // 1. Quản lý trạng thái & DOM Elements
+      // ------------------------------------------
+      let isGameActive = false;
+      let hasScared = false;
+      let countdownTimer = null;
+      let timeLeft = 6; // Đếm ngược 6 giây trước khi tự động hù
+      let audioCtx = null;
+      let ambientNodes = null;
+
+      const modal = document.getElementById('start-modal');
+      const btnStart = document.getElementById('btn-start');
+      const jumpscareOverlay = document.getElementById('jumpscare-overlay');
+      const scareImg = document.getElementById('scare-img');
+      const reliefScreen = document.getElementById('relief-screen');
+      const timerDisplay = document.getElementById('timer-display');
+      const targetAttic = document.getElementById('target-attic');
+      const btnInspect = document.getElementById('btn-inspect');
+      const interactiveCanvas = document.getElementById('interactive-canvas-area');
+      const lens = document.getElementById('lens');
+      const clickFeedback = document.getElementById('click-feedback');
+      const btnCopyLink = document.getElementById('btn-copy-link');
+      const btnReplay = document.getElementById('btn-replay');
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+
+      // Preload ảnh jumpscare dự phòng chất lượng cao
+      const scareImages = [
+        "https://raw.githubusercontent.com/ReemanS/simple-js/master/scare.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/a/a8/Scary_Maze_Game_screenshot.png",
+        "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80"
+      ];
+      let currentScareImgIdx = 0;
+      scareImg.onerror = function() {
+        currentScareImgIdx++;
+        if (currentScareImgIdx < scareImages.length) {
+          scareImg.src = scareImages[currentScareImgIdx];
+        }
+      };
+
+      scareImages.forEach(url => {
+        const img = new Image();
+        img.src = url;
+      });
+
+      // ------------------------------------------
+      // 2. Audio Engine (Web Audio API + HTML5 Audio)
+      // Khắc phục 100% chính sách Autoplay của trình duyệt
+      // ------------------------------------------
+      const screamAudioSources = [
+        "https://raw.githubusercontent.com/ReemanS/simple-js/master/scream2.mp3",
+        "https://reemans.github.io/simple-js/scream2.mp3",
+        "https://upload.wikimedia.org/wikipedia/commons/d/d9/Wilhelm_Scream.ogg"
+      ];
+      let currentAudioIdx = 0;
+      const screamAudio = new Audio();
+      screamAudio.src = screamAudioSources[0];
+      screamAudio.preload = "auto";
+      screamAudio.volume = 1.0;
+      screamAudio.onerror = function() {
+        currentAudioIdx++;
+        if (currentAudioIdx < screamAudioSources.length) {
+          screamAudio.src = screamAudioSources[currentAudioIdx];
+        }
+      };
+
+      function initAudioContext() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      // Âm thanh ma mị ambient nhẹ nhàng (dụ người dùng mở to loa)
+      function startEerieAmbience() {
+        if (!audioCtx) return;
+        try {
+          const osc1 = audioCtx.createOscillator();
+          const osc2 = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(65, audioCtx.currentTime); // C2
+
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(65.7, audioCtx.currentTime); // Nhịp đập chênh tần số tạo cảm giác rùng rợn
+
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(220, audioCtx.currentTime);
+
+          gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.07, audioCtx.currentTime + 2); // Âm lượng nhỏ mờ ảo
+
+          osc1.connect(filter);
+          osc2.connect(filter);
+          filter.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+
+          osc1.start();
+          osc2.start();
+          ambientNodes = { osc1, osc2, gainNode };
+        } catch (e) {
+          console.warn("Ambient audio error:", e);
+        }
+      }
+
+      function stopEerieAmbience() {
+        if (ambientNodes && ambientNodes.gainNode && audioCtx) {
+          try {
+            ambientNodes.gainNode.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+            setTimeout(() => {
+              try {
+                ambientNodes.osc1.stop();
+                ambientNodes.osc2.stop();
+              } catch(e) {}
+            }, 150);
+          } catch (e) {}
+        }
+      }
+
+      // Âm thanh tiếng bíp / radar khi rê chuột hoặc click điểm ảnh
+      function playClickBeep() {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(950, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.08);
+
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {}
+      }
+
+      // Bộ tổng hợp tiếng thét kinh hoàng (Web Audio Synth Scream Fallback)
+      // Đảm bảo dù mạng rớt hay file MP3 bị chặn CORS, âm thanh thét vẫn nổ vang!
+      function playSynthesizedHorrorScream() {
+        if (!audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          const masterGain = audioCtx.createGain();
+          masterGain.gain.setValueAtTime(1.0, now);
+          masterGain.gain.exponentialRampToValueAtTime(0.01, now + 2.5);
+
+          // Tạo độ méo tiếng (Distortion)
+          const distortion = audioCtx.createWaveShaper();
+          const n_samples = 44100;
+          const curve = new Float32Array(n_samples);
+          const deg = Math.PI / 180;
+          for (let i = 0; i < n_samples; ++i) {
+            const x = (i * 2) / n_samples - 1;
+            curve[i] = ((3 + 300) * x * 20 * deg) / (Math.PI + 300 * Math.abs(x));
+          }
+          distortion.curve = curve;
+          distortion.oversample = '4x';
+
+          // 4 dao động đa tần số rít chói tai (800Hz - 2500Hz)
+          const freqs = [750, 890, 1340, 2100];
+          freqs.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const oscGain = audioCtx.createGain();
+            osc.type = idx % 2 === 0 ? 'sawtooth' : 'square';
+            osc.frequency.setValueAtTime(freq, now);
+            osc.frequency.linearRampToValueAtTime(freq * 1.6, now + 0.2);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + 2.4);
+
+            oscGain.gain.setValueAtTime(0.4, now);
+            osc.connect(oscGain);
+            oscGain.connect(distortion);
+            osc.start(now);
+            osc.stop(now + 2.5);
+          });
+
+          // Tiếng gầm rú / White Noise nổ bùm
+          const bufferSize = audioCtx.sampleRate * 2.5;
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+          }
+          const whiteNoise = audioCtx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+
+          const noiseFilter = audioCtx.createBiquadFilter();
+          noiseFilter.type = 'bandpass';
+          noiseFilter.frequency.setValueAtTime(1500, now);
+          noiseFilter.Q.setValueAtTime(1.2, now);
+
+          const noiseGain = audioCtx.createGain();
+          noiseGain.gain.setValueAtTime(0.9, now);
+          noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 2.3);
+
+          whiteNoise.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(distortion);
+
+          distortion.connect(masterGain);
+          masterGain.connect(audioCtx.destination);
+
+          whiteNoise.start(now);
+          whiteNoise.stop(now + 2.5);
+        } catch(e) {
+          console.warn("Synth scream error:", e);
+        }
+      }
+
+      // Âm thanh chúc mừng vui nhộn (Fanfare hạ nhiệt)
+      function playCheerfulFanfare() {
+        if (!audioCtx) return;
+        try {
+          const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+          notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.12);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.4);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + i * 0.12);
+            osc.stop(audioCtx.currentTime + i * 0.12 + 0.45);
+          });
+        } catch(e) {}
+      }
+
+      // ------------------------------------------
+      // 3. Toàn màn hình (Fullscreen API)
+      // ------------------------------------------
+      function requestFullScreen() {
+        const el = document.documentElement;
+        const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (rfs) {
+          try {
+            rfs.call(el).catch(err => console.log("Fullscreen declined or blocked:", err));
+          } catch(e) {}
+        }
+      }
+
+      // ------------------------------------------
+      // 4. KÍCH HOẠT JUMPSCARE (KHOẢNH KHẮC DỌA)
+      // ------------------------------------------
+      function triggerJumpscare() {
+        if (hasScared) return;
+        hasScared = true;
+        clearInterval(countdownTimer);
+
+        // 1. Toàn màn hình ngay lập tức
+        requestFullScreen();
+
+        // 2. Dừng nhạc nền ma mị
+        stopEerieAmbience();
+
+        // 3. Âm thanh thét chói tai cực đại
+        try {
+          screamAudio.currentTime = 0;
+          const playPromise = screamAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.log("Audio play blocked, using Web Audio Synth:", error);
+            });
+          }
+        } catch(e) {}
+        playSynthesizedHorrorScream();
+
+        // 4. Rung điện thoại nếu có Haptic API
+        if (navigator.vibrate) {
+          try {
+            navigator.vibrate([250, 80, 250, 80, 400]);
+          } catch(e) {}
+        }
+
+        // 5. Hiển thị lớp Jumpscare với hiệu ứng rung giật & chớp đèn
+        jumpscareOverlay.classList.remove('hidden');
+        jumpscareOverlay.classList.add('scare-active');
+
+        // 6. Sau 2.5 giây -> Tự động chuyển sang màn hình Hạ nhiệt (Relief Phase)
+        setTimeout(() => {
+          endJumpscareAndShowRelief();
+        }, 2500);
+      }
+
+      // ------------------------------------------
+      // 5. MÀN HÌNH HẠ NHIỆT & TĂNG TƯƠNG TÁC (TÀ HỎA)
+      // ------------------------------------------
+      function endJumpscareAndShowRelief() {
+        // Tắt lớp jumpscare
+        jumpscareOverlay.classList.remove('scare-active');
+        jumpscareOverlay.classList.add('hidden');
+
+        // Hiện màn hình hạ nhiệt
+        reliefScreen.classList.remove('hidden');
+
+        // Phát âm thanh vui mừng Tadaaa
+        playCheerfulFanfare();
+
+        // Nổ pháo hoa giấy rực rỡ
+        launchConfetti();
+
+        // Chạy hoạt ảnh dơi & ma bay trên canvas
+        startFloatingBats();
+      }
+
+      // Hiệu ứng pháo hoa giấy Halloween
+      function launchConfetti() {
+        if (typeof confetti === 'function') {
+          // Bắn loạt 1
+          confetti({
+            particleCount: 80,
+            spread: 90,
+            origin: { y: 0.6 },
+            colors: ['#ff6600', '#7928ca', '#00ff88', '#ff0033', '#ffffff', '#ffb703']
+          });
+
+          // Bắn liên tiếp hai bên cánh gà
+          setTimeout(() => {
+            confetti({
+              particleCount: 50,
+              angle: 60,
+              spread: 60,
+              origin: { x: 0 },
+              colors: ['#ff6600', '#ff9900', '#ffffff']
+            });
+            confetti({
+              particleCount: 50,
+              angle: 120,
+              spread: 60,
+              origin: { x: 1 },
+              colors: ['#7928ca', '#ff0033', '#00ff88']
+            });
+          }, 350);
+        }
+      }
+
+      // Canvas hoạt họa dơi bay & bí ngô lơ lửng
+      function startFloatingBats() {
+        const canvas = document.getElementById('bats-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const emojis = ['🦇', '👻', '🎃', '✨', '🕷️'];
+        const particles = [];
+        for (let i = 0; i < 28; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            emoji: emojis[Math.floor(Math.random() * emojis.length)],
+            size: Math.random() * 20 + 16,
+            speedX: (Math.random() - 0.5) * 2,
+            speedY: -Math.random() * 1.5 - 0.5,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 2
+          });
+        }
+
+        let animFrame;
+        function render() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.rotation += p.rotSpeed;
+
+            if (p.y < -40) {
+              p.y = canvas.height + 30;
+              p.x = Math.random() * canvas.width;
+            }
+            if (p.x < -40) p.x = canvas.width + 30;
+            if (p.x > canvas.width + 40) p.x = -30;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.font = `${p.size}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(p.emoji, 0, 0);
+            ctx.restore();
+          });
+          animFrame = requestAnimationFrame(render);
+        }
+        render();
+
+        window.addEventListener('resize', () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+      }
+
+      // ------------------------------------------
+      // 6. TƯƠNG TÁC KÍNH LÚP & ĐỒNG HỒ ĐẾM NGƯỢC
+      // ------------------------------------------
+      interactiveCanvas.addEventListener('mousemove', (e) => {
+        const rect = interactiveCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        lens.style.left = `${x}px`;
+        lens.style.top = `${y}px`;
+        lens.classList.remove('hidden');
+      });
+
+      interactiveCanvas.addEventListener('mouseleave', () => {
+        lens.classList.add('hidden');
+      });
+
+      // Bấm vào bất kỳ đâu trên tranh B hoặc mục tiêu -> KÍCH HOẠT DỌA
+      targetAttic.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerJumpscare();
+      });
+
+      interactiveCanvas.addEventListener('click', () => {
+        playClickBeep();
+        clickFeedback.textContent = "🔍 Đang phân tích vị trí...";
+        // Dọa ngay khi người chơi bấm vào bức tranh
+        setTimeout(() => {
+          triggerJumpscare();
+        }, 150);
+      });
+
+      btnInspect.addEventListener('click', () => {
+        playClickBeep();
+        triggerJumpscare();
+      });
+
+      // ------------------------------------------
+      // 7. BẮT ĐẦU GAME KHI BẤM MODAL
+      // ------------------------------------------
+      btnStart.addEventListener('click', () => {
+        initAudioContext();
+        startEerieAmbience();
+
+        // Ẩn modal
+        modal.classList.add('hidden');
+        isGameActive = true;
+
+        // Bắt đầu đếm ngược 6 giây kích thích người chơi nhìn sát
+        countdownTimer = setInterval(() => {
+          timeLeft--;
+          if (timeLeft >= 0) {
+            timerDisplay.textContent = `00:0${timeLeft}`;
+            playClickBeep();
+          }
+          if (timeLeft <= 0) {
+            clearInterval(countdownTimer);
+            triggerJumpscare();
+          }
+        }, 1000);
+      });
+
+      // ------------------------------------------
+      // 8. TÍNH NĂNG CHIA SẺ & COPY LINK TROLL
+      // ------------------------------------------
+      function showToast(text) {
+        toastMsg.textContent = text;
+        toast.classList.remove('hidden');
+        toast.classList.add('flex');
+        setTimeout(() => {
+          toast.classList.remove('flex');
+          toast.classList.add('hidden');
+        }, 3200);
+      }
+
+      btnCopyLink.addEventListener('click', () => {
+        const url = window.location.href;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => {
+            showToast("Đã copy link! Gửi ngay cho nạn nhân tiếp theo 😈🎃");
+          }).catch(() => {
+            fallbackCopy(url);
+          });
+        } else {
+          fallbackCopy(url);
+        }
+      });
+
+      function fallbackCopy(text) {
+        const tempInput = document.createElement("input");
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        showToast("Đã copy link vào bộ nhớ tạm! Gửi để troll bạn bè nào! 🎃");
+      }
+
+      // Nút Thử Lại
+      btnReplay.addEventListener('click', () => {
+        window.location.reload();
+      });
+
+      // Nút Share MXH
+      document.getElementById('share-facebook').addEventListener('click', () => {
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+      });
+
+      document.getElementById('share-zalo').addEventListener('click', () => {
+        const url = window.location.href;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(url);
+        }
+        showToast("Đã sao chép link! Dán vào Zalo để gửi cho bạn bè nhé! 👻");
+      });
+
+    })();
+  </script>
+</body>
+</html>
