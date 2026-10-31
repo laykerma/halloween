@@ -12,3 +12,4 @@ Một trang web Halloween dùng để troll/dọa bạn bè với kịch bản b
 - **Tailwind CSS CDN** & Google Fonts (Creepster, Outfit).
 - **Web Audio API Engine:** Tự động tổng hợp âm thanh ma mị và tiếng thét chói tai, đảm bảo phát âm thanh 100% không lo bị chặn autoplay hoặc rớt mạng.
 - **Canvas Confetti & Particle Animation.**
+
